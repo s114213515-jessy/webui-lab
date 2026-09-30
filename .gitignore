@@ -1,6 +1,12 @@
 # Dependencies
 node_modules/
 
+# Python virtual environments and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
 # Build output
 dist/
 build/
@@ -9,6 +15,8 @@ build/
 .env
 .env.local
 .env.*.local
+*.pem
+*.key
 
 # Editor and operating system
 .vscode/

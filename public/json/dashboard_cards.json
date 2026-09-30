@@ -1,0 +1,28 @@
+{
+  "dashboard": [
+    {
+      "title": "今日課程",
+      "description": "查看今日課程與教室資訊。",
+      "value": "4 堂"
+    },
+    {
+      "title": "待處理事項",
+      "description": "整理尚未完成的教務工作。",
+      "value": "3 項"
+    }
+  ],
+  "courses": [
+    {
+      "title": "課程清單",
+      "description": "此處預留課程管理介面。",
+      "value": "尚未連接資料庫"
+    }
+  ],
+  "announcements": [
+    {
+      "title": "最新公告",
+      "description": "此處預留公告管理介面。",
+      "value": "範例資料"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta name="description" content="Web Programming 課程實作的教務儀表板原型。">
+    <title>WKE 教務系統</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./">WKE 教務系統</a>
+        <div class="topbar-actions">
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">
+            切換深色模式
+          </button>
+          <button class="login-button" id="login-button" type="button">登入</button>
+        </div>
+      </header>
+
+      <div class="page-layout">
+        <aside class="sidebar">
+          <h2 class="sidebar-title">功能選單</h2>
+          <nav id="sidebar-nav" aria-label="主要功能"></nav>
+        </aside>
+
+        <main class="main-content">
+          <header class="page-heading">
+            <p class="eyebrow">TEACHER PORTAL</p>
+            <h1 id="page-title">儀表板</h1>
+            <p>查看教務摘要與常用功能。</p>
+          </header>
+          <section
+            class="card-grid"
+            id="dashboard-cards"
+            aria-label="儀表板摘要"
+            aria-live="polite"
+          ></section>
+          <p class="status-message" id="status-message" role="status"></p>
+        </main>
+      </div>
+
+      <footer class="footer">
+        <small>Web Programming 課程實作</small>
+      </footer>
+    </div>
+  </body>
+</html>
