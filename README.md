@@ -16,6 +16,20 @@ Web Programming 課程實作專案。
 - **安全與隱私**：目前沒有真正的登入，也不存放真實師生資料；公開網站中的前端與 JSON 資料皆可被訪客讀取。
 - **MVP 範圍**：完成響應式靜態儀表板與範例資料展示；資料庫、真實帳號驗證與教務系統整合不在目前範圍。
 
+## W5：JavaScript DOM 與事件處理
+
+首頁提供 W5 課程入口，或直接開啟 `public/w05.html`。教材包含本週目標、`app.js` top-down
+閱讀方式、Event → Function → DOM 心智模型、互動示範、AI Prompt 範本、DOM/Event
+速查、Debugging 步驟、練習和 Code Review 清單。
+
+本機啟動 FastAPI 後可瀏覽：
+
+```text
+http://127.0.0.1:7777/w05.html
+```
+
+W5 示範頁使用相對資產路徑，支援將 repo 部署在網域根目錄或 GitHub Pages 專案子路徑。
+
 ## W1：本機預覽
 
 先確認已安裝 Node.js 與 Git。在 repo 根目錄的 PowerShell 執行：
@@ -51,8 +65,13 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```text
 public/
 ├── index.html
-├── css/style.css
-├── js/app.js
+├── css/
+│   ├── style.css
+│   └── w05.css
+├── js/
+│   ├── app.js
+│   └── w05.js
+├── w05.html
 └── json/
     ├── teacher_ops.json
     └── dashboard_cards.json

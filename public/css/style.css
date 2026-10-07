@@ -139,6 +139,18 @@ a {
   color: var(--color-muted);
 }
 
+.w05-course-link {
+  display: inline-flex;
+  margin-top: 0.5rem;
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.w05-course-link:hover {
+  text-decoration: underline;
+}
+
 .eyebrow {
   margin: 0;
   color: var(--color-accent);
