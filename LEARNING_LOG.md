@@ -59,3 +59,15 @@
 - 我選的一個互動流程（Event → Function → DOM → UI）：
 - 我用哪些步驟檢查 AI 修改的程式：
 - 我遇到的問題與解決方式：
+
+## W6 — Fetch API / AJAX
+
+### 本週完成
+- 新增 W6 課程頁，整理 Fetch、HTTP status、OAuth/API Key、CORS 與 Preflight。
+- 加入 fetch 本機範例 JSON 的操作練習，並可切換 HTTP 404 情境觀察錯誤處理。
+- 說明 OAuth 與私密憑證應由後端處理；本頁不實作登入、不保存或公開憑證。
+
+### 我自己的心得
+- 我如何解釋 `fetch()`、HTTP response 與 JSON 的關係：
+- 我如何判斷錯誤來自 HTTP、Network、OAuth 或 CORS：
+- 我遇到的問題與解決方式：
