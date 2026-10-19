@@ -30,6 +30,20 @@ http://127.0.0.1:7777/w05.html
 
 W5 示範頁使用相對資產路徑，支援將 repo 部署在網域根目錄或 GitHub Pages 專案子路徑。
 
+## W6：Fetch API / AJAX
+
+首頁提供 W6 課程入口，或直接開啟 `public/w06.html`。課程整理 Fetch/AJAX、
+HTTP 狀態處理、API Key 與 OAuth、前端 Secret 安全、CORS / Preflight、
+Google API 設定檢查與 AI Coding Review。頁面中的互動練習會 fetch 本 repo 的範例 JSON；
+「HTTP 404」選項用來練習 HTTP 錯誤處理。這是前端教學示範，不會呼叫 Google API，
+也不包含 OAuth 登入或任何憑證。
+
+本機啟動 FastAPI 後可瀏覽：
+
+```text
+http://127.0.0.1:7777/w06.html
+```
+
 ## W1：本機預覽
 
 先確認已安裝 Node.js 與 Git。在 repo 根目錄的 PowerShell 執行：
@@ -67,11 +81,14 @@ public/
 ├── index.html
 ├── css/
 │   ├── style.css
-│   └── w05.css
+│   ├── w05.css
+│   └── w06.css
 ├── js/
 │   ├── app.js
-│   └── w05.js
+│   ├── w05.js
+│   └── w06.js
 ├── w05.html
+├── w06.html
 └── json/
     ├── teacher_ops.json
     └── dashboard_cards.json

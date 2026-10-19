@@ -1,0 +1,89 @@
+.lesson-page-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.lesson-page-links a {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.w06-flow-card > div {
+  min-width: 9rem;
+}
+
+.w06-practice-panel {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.w06-select-label {
+  align-self: center;
+  font-weight: 700;
+}
+
+#requestScenario {
+  min-height: 2.75rem;
+  max-width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.w06-request-path {
+  margin: 0;
+  color: var(--color-muted);
+  font-family: Consolas, "Courier New", monospace;
+  overflow-wrap: anywhere;
+}
+
+.w06-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.7rem;
+}
+
+.w06-result-card {
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+}
+
+.w06-result-card h3,
+.w06-result-card p {
+  margin: 0.25rem 0;
+}
+
+.w06-result-card p {
+  color: var(--color-muted);
+}
+
+.w06-result-value {
+  color: var(--color-accent) !important;
+  font-weight: 750;
+}
+
+.w06-practice-panel [role="status"].is-error {
+  color: #b42318;
+  font-weight: 700;
+}
+
+.theme-dark .w06-practice-panel [role="status"].is-error {
+  color: #fda29b;
+}
+
+.w06-security-note {
+  border-left-color: #d92d20;
+}
+
+@media (min-width: 40rem) {
+  .w06-practice-panel .practice-controls {
+    align-items: center;
+  }
+}

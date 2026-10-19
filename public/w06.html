@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta
+      name="description"
+      content="W6 Fetch API 與 AJAX：理解 HTTP、JSON、OAuth、CORS，並動手操作資料載入。"
+    >
+    <title>W6 Fetch API / AJAX</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w05.css">
+    <link rel="stylesheet" href="css/w06.css">
+    <script src="js/w06.js" defer></script>
+  </head>
+  <body>
+    <header class="lesson-topbar">
+      <a class="lesson-brand" href="./" aria-label="返回 WKE 教務系統首頁">
+        WKE <span>教務系統</span>
+      </a>
+      <nav class="lesson-page-links" aria-label="課程導覽">
+        <a href="w05.html">W5 課程</a>
+        <a href="./">返回儀表板</a>
+      </nav>
+    </header>
+
+    <div class="lesson-layout">
+      <nav class="lesson-toc" aria-label="W6 課程目錄">
+        <p class="lesson-toc-title">W6 課程目錄</p>
+        <a href="#goals">學習目標</a>
+        <a href="#fetch-flow">Fetch 流程</a>
+        <a href="#ajax">AJAX 與 HTTP</a>
+        <a href="#practice">動手操作</a>
+        <a href="#credentials">API Key 與 OAuth</a>
+        <a href="#cors">CORS / Preflight</a>
+        <a href="#debugging">Debugging</a>
+        <a href="#google-api">Google API 設定</a>
+        <a href="#review">AI Coding Review</a>
+      </nav>
+
+      <main class="lesson-content">
+        <section class="lesson-hero" aria-labelledby="lessonTitle">
+          <p class="eyebrow">WEB PROGRAMMING · WEEK 06</p>
+          <h1 id="lessonTitle">Fetch API / AJAX</h1>
+          <p class="lesson-lead">
+            延續 W5 的互動流程，加入 HTTP 請求：按下操作、取得 JSON，檢查結果，再更新畫面。
+          </p>
+          <div class="lesson-hero-flow" aria-label="本週核心流程">
+            <span>Event</span><span aria-hidden="true">→</span>
+            <span>Function</span><span aria-hidden="true">→</span>
+            <span>fetch()</span><span aria-hidden="true">→</span>
+            <span>HTTP / JSON</span><span aria-hidden="true">→</span>
+            <span>DOM / UI</span>
+          </div>
+          <p class="lesson-caption">本課程頁只使用 repo 內的範例 JSON，不會呼叫 Google API 或使用真實登入。</p>
+        </section>
+
+        <section class="lesson-section" id="goals" aria-labelledby="goalsTitle">
+          <p class="eyebrow">01 · LEARNING GOALS</p>
+          <h2 id="goalsTitle">完成本週後，你可以</h2>
+          <ul class="goal-list">
+            <li>解釋 AJAX 如何在背景傳送請求，不必重新載入整個頁面。</li>
+            <li>說明 <code>fetch()</code>、HTTP response、<code>response.ok</code> 與 <code>response.json()</code> 的用途。</li>
+            <li>區分 HTTP、Network、OAuth/token、JSON 格式與 CORS 問題。</li>
+            <li>知道 API Key 不等於 OAuth access token，也知道瀏覽器程式碼不能保護秘密。</li>
+            <li>用 Network、Console 與清楚的 Prompt 找出資料請求在哪一層失敗。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="fetch-flow" aria-labelledby="fetchFlowTitle">
+          <p class="eyebrow">02 · W5 → W6</p>
+          <h2 id="fetchFlowTitle">在互動流程中加入網路</h2>
+          <div class="flow-card w06-flow-card">
+            <div><span class="flow-label">使用者操作</span><strong>按下載入</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">JavaScript</span><strong>呼叫 fetch()</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">HTTP</span><strong>Request / Response</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">資料與畫面</span><strong>JSON → DOM</strong></div>
+          </div>
+          <pre><code>async function loadData() {
+  const response = await fetch("json/dashboard_cards.json");
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  renderCards(data.dashboard);
+}</code></pre>
+          <ul>
+            <li><code>fetch(url)</code>：送出請求並回傳一個 Promise。</li>
+            <li><code>await</code>：等候非同步結果，不會因此凍結整個瀏覽器畫面。</li>
+            <li><code>response.ok</code>：HTTP status 是否為成功範圍；404/500 不會自動讓 fetch reject。</li>
+            <li><code>response.json()</code>：解析 response body，解析失敗也需要處理。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="ajax" aria-labelledby="ajaxTitle">
+          <p class="eyebrow">03 · AJAX &amp; HTTP</p>
+          <h2 id="ajaxTitle">AJAX 是一種互動方式，不是程式語言</h2>
+          <p>
+            AJAX 是 JavaScript 在背景向 Server/API 傳送或取得資料的做法。現代網站通常傳 JSON；
+            收到資料後只更新需要的 DOM，不必重整整頁。
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>狀態</th><th>常見意思</th><th>先檢查什麼</th></tr></thead>
+              <tbody>
+                <tr><td><code>200 OK</code></td><td>請求成功</td><td>Response body 格式及畫面 render。</td></tr>
+                <tr><td><code>400 Bad Request</code></td><td>請求格式或參數不正確</td><td>URL、method、query、request body。</td></tr>
+                <tr><td><code>401 Unauthorized</code></td><td>尚未登入或認證資料無效</td><td>登入狀態、token 與後端認證流程。</td></tr>
+                <tr><td><code>403 Forbidden</code></td><td>身分或權限不足</td><td>帳號權限、OAuth scope 或 API 設定。</td></tr>
+                <tr><td><code>404 Not Found</code></td><td>資源或路徑不存在</td><td>API URL、路由、資源 ID。</td></tr>
+                <tr><td><code>500</code></td><td>伺服器發生錯誤</td><td>後端 log 與 API response。</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note-panel">
+            <strong>兩種不同的失敗</strong>
+            <p>HTTP 404 是有收到伺服器回應但狀態不成功；Network error 則可能是連線、DNS 或瀏覽器安全政策問題。都要明確呈現錯誤，不要把錯誤假裝成空資料。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="practice" aria-labelledby="practiceTitle">
+          <p class="eyebrow">04 · TRY IT</p>
+          <h2 id="practiceTitle">動手操作 Fetch 與 HTTP 錯誤處理</h2>
+          <p>載入按鈕會用 fetch 取得本 repo 的範例 JSON；選擇 404 可觀察非成功 HTTP response 如何被明確處理。</p>
+          <div class="practice-panel w06-practice-panel">
+            <div class="practice-controls">
+              <label class="w06-select-label" for="requestScenario">請求情境</label>
+              <select id="requestScenario">
+                <option value="success">成功：載入範例卡片 JSON</option>
+                <option value="not-found">HTTP error：請求不存在的 JSON</option>
+              </select>
+              <button class="practice-button" id="fetchDemoButton" type="button">送出 Fetch 請求</button>
+            </div>
+            <p class="w06-request-path" id="requestPath">GET json/dashboard_cards.json</p>
+            <p class="practice-status" id="fetchStatus" role="status" aria-live="polite">
+              尚未送出請求。
+            </p>
+            <div
+              class="w06-results"
+              id="fetchResults"
+              aria-label="Fetch 範例資料"
+              aria-live="polite"
+              aria-busy="false"
+            ></div>
+          </div>
+          <div class="note-panel">
+            <strong>操作後請追蹤</strong>
+            <p><code>click</code> → <code>loadDemoData()</code> → <code>fetch()</code> → 檢查 HTTP response → 解析 JSON → 建立卡片 DOM → 更新狀態文字。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="credentials" aria-labelledby="credentialsTitle">
+          <p class="eyebrow">05 · API KEY &amp; OAUTH</p>
+          <h2 id="credentialsTitle">認證方式不同，不能混為一談</h2>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>公開 API</h3>
+              <p>不需要登入即可讀取；仍要遵守服務的使用條款與流量限制。</p>
+            </article>
+            <article class="role-card">
+              <h3>API Key</h3>
+              <p>通常識別應用程式或專案。放在瀏覽器的 Key 可被使用者看到；依服務支援設定來源、API 與額度限制，不要假設它是秘密。</p>
+            </article>
+            <article class="role-card">
+              <h3>OAuth Access Token</h3>
+              <p>代表使用者授權的範圍，應依 OAuth 流程取得並妥善處理；Access Token 與 API Key 是不同用途。</p>
+            </article>
+          </div>
+          <pre><code>使用者 → Google 登入 / 同意授權 → OAuth
+       → Access Token → fetch() → Google API → JSON</code></pre>
+          <div class="note-panel w06-security-note">
+            <strong>絕不可把真正的 Secret 放入前端</strong>
+            <p>Client Secret、Service Account private key、Refresh Token、資料庫密碼等不能寫進 HTML/JavaScript 或上傳公開 repo。需要保密的認證與 token 交換應由後端完成。</p>
+          </div>
+          <p class="lesson-caption">
+            本 repo 頁面不實作 Google 登入或 API 呼叫。若後續由 FastAPI 提供登入端點，前端應呼叫同一網站的後端 session API；後端負責驗證 Google 身分及 session cookie。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="cors" aria-labelledby="corsTitle">
+          <p class="eyebrow">06 · CORS</p>
+          <h2 id="corsTitle">CORS 是瀏覽器執行的跨來源讀取規則</h2>
+          <p>
+            Origin 由 scheme、host、port 組成。像 <code>http://localhost:5500</code> 與
+            <code>http://localhost:8000</code> 是不同 origin，因為 port 不同。
+            跨來源時，瀏覽器會依 API 回應中的 CORS headers 判斷網頁 JavaScript 是否可以讀取 response。
+          </p>
+          <pre><code>Frontend: http://localhost:5500
+API:      http://localhost:8000
+
+API response 可能包含：
+Access-Control-Allow-Origin: http://localhost:5500</code></pre>
+          <div class="note-panel">
+            <strong>curl / Postman 成功，瀏覽器卻顯示 CORS error，並不矛盾</strong>
+            <p>curl 和 Postman 不會替網頁執行 Same-Origin Policy。瀏覽器才會限制 JavaScript 讀取未獲允許的跨來源 response。CORS 通常要由 API 伺服器或平台設定；在前端自行加上 response header 並不能授權伺服器。</p>
+          </div>
+          <h3>Preflight：真正請求前的詢問</h3>
+          <p>部分跨來源請求會先送 <code>OPTIONS</code> 詢問伺服器是否允許指定的 method/header；不是每個 fetch 都會 preflight。</p>
+          <pre><code>Browser ── OPTIONS preflight ──→ API
+Browser ←─ CORS policy headers ─ API
+Browser ── actual request ──────→ API (如果 preflight 通過)</code></pre>
+        </section>
+
+        <section class="lesson-section" id="debugging" aria-labelledby="debuggingTitle">
+          <p class="eyebrow">07 · DEBUGGING</p>
+          <h2 id="debuggingTitle">依照請求到畫面的順序找問題</h2>
+          <ol class="debug-list">
+            <li><strong>Request：</strong>URL、HTTP method、query/body 是否正確？</li>
+            <li><strong>Network：</strong>請求有沒有送出？HTTP status 和 response body 是什麼？有沒有 OPTIONS？</li>
+            <li><strong>Authentication：</strong>是否需要 API Key、OAuth access token 或正確 scope？</li>
+            <li><strong>CORS：</strong>Frontend/API origin 是否不同？response 是否有允許目前 origin 的 headers？</li>
+            <li><strong>JSON：</strong>body 能否解析？資料欄位是否符合預期？</li>
+            <li><strong>DOM：</strong>render function 是否執行？是否使用安全的 DOM API 更新畫面？</li>
+          </ol>
+          <pre><code>我的 Browser fetch() 發生錯誤。請不要先重寫程式。
+1. 先確認 Frontend origin 與 API origin。
+2. 檢查 Network 的 URL、method、status、response body。
+3. 判斷是否有 OPTIONS preflight 和 CORS response headers。
+4. 分辨 HTTP、Network、OAuth/token、JSON 或 DOM 問題。
+5. 指出應修改 Frontend、Backend、OAuth 或 API Console 的哪一層，
+   再提出最小修正方式。</code></pre>
+        </section>
+
+        <section class="lesson-section" id="google-api" aria-labelledby="googleApiTitle">
+          <p class="eyebrow">08 · GOOGLE CLOUD CHECKLIST</p>
+          <h2 id="googleApiTitle">串接 Google API 前逐項確認</h2>
+          <ol class="workflow-list">
+            <li>建立或選擇正確的 Google Cloud Project。</li>
+            <li>確認目標 API 已啟用。</li>
+            <li>設定正確類型的 OAuth Client。</li>
+            <li>確認 Authorized JavaScript Origins 與 Redirect URI 完全符合實際網址。</li>
+            <li>只要求必要的 OAuth scopes。</li>
+            <li>確認 Token 由正確流程取得、傳給正確 API，且不把 Client Secret 或 Refresh Token 放進前端。</li>
+          </ol>
+          <p>Client ID、Redirect URI、已啟用的 API、Scopes 與允許來源都要依實際專案確認，不要讓 AI 猜測或自行補上。</p>
+        </section>
+
+        <section class="lesson-section" id="review" aria-labelledby="reviewTitle">
+          <p class="eyebrow">09 · AI CODING REVIEW</p>
+          <h2 id="reviewTitle">AI 串接 API 後，自己要能回答</h2>
+          <ol class="goal-list">
+            <li><code>fetch()</code> 在哪個 function？什麼 Event 會觸發它？</li>
+            <li>Request 的 URL、HTTP method 與認證方式是什麼？</li>
+            <li>成功時 response 是什麼格式？哪個 function 解析 JSON 並更新 DOM？</li>
+            <li>HTTP 非成功狀態、Network error、JSON 錯誤和空資料如何處理？</li>
+            <li>是否跨 origin？若有 CORS 問題，應檢查哪個 server response / 設定？</li>
+            <li>有沒有把 Client Secret、Refresh Token 或其他敏感資料放進前端？</li>
+          </ol>
+          <div class="note-panel">
+            <strong>W6 核心流程</strong>
+            <p><code>Event → Function → fetch() → HTTP/API → JSON → Function → DOM → UI</code></p>
+          </div>
+          <p class="lesson-caption">完成本週實作後，記錄一個 HTTP、OAuth/token、CORS、JSON 或 DOM 問題，以及你如何定位它。</p>
+          <a class="lesson-home-link" href="w05.html">← 回到 W5：JavaScript DOM 與事件處理</a>
+        </section>
+      </main>
+    </div>
+
+    <footer class="lesson-footer">
+      W6 教材實作頁 · 範例使用公開 repo 內的虛構資料，不提供實際登入服務
+    </footer>
+  </body>
+</html>
