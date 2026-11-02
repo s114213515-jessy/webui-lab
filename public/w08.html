@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta
+      name="description"
+      content="W8 練習 HTML 表單、JavaScript 輸入驗證與安全顯示使用者文字。"
+    >
+    <title>W8 表單處理與輸入驗證</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w05.css">
+    <link rel="stylesheet" href="css/w08.css">
+    <script src="js/w08.js" defer></script>
+  </head>
+  <body>
+    <header class="lesson-topbar">
+      <a class="lesson-brand" href="./" aria-label="返回 WKE 教務系統首頁">
+        WKE <span>教務系統</span>
+      </a>
+      <nav class="lesson-page-links" aria-label="課程導覽">
+        <a href="w07.html">W7 課程</a>
+        <a href="./">返回儀表板</a>
+      </nav>
+    </header>
+
+    <div class="lesson-layout">
+      <nav class="lesson-toc" aria-label="W8 課程目錄">
+        <p class="lesson-toc-title">W8 課程目錄</p>
+        <a href="#goals">學習目標</a>
+        <a href="#form">表單練習</a>
+        <a href="#validation">驗證流程</a>
+        <a href="#xss">XSS 與安全輸出</a>
+        <a href="#security">前後端責任</a>
+      </nav>
+
+      <main class="lesson-content">
+        <section class="lesson-hero" aria-labelledby="lessonTitle">
+          <p class="eyebrow">WEB PROGRAMMING · WEEK 08</p>
+          <h1 id="lessonTitle">表單處理與前端輸入驗證</h1>
+          <p class="lesson-lead">
+            用 HTML 和 JavaScript 檢查輸入，並把內容安全地顯示出來。
+          </p>
+          <div class="lesson-hero-flow" aria-label="本週核心流程">
+            <span>Submit Event</span><span aria-hidden="true">→</span>
+            <span>preventDefault()</span><span aria-hidden="true">→</span>
+            <span>Validation</span><span aria-hidden="true">→</span>
+            <span>Safe DOM</span>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="goals" aria-labelledby="goalsTitle">
+          <p class="eyebrow">01 · LEARNING GOALS</p>
+          <h2 id="goalsTitle">完成本週後，你可以</h2>
+          <ul class="goal-list">
+            <li>使用 form、label、input 和 button 建立可操作的表單。</li>
+            <li>說明 required、type、minlength 和 JavaScript 驗證的用途。</li>
+            <li>理解為什麼前端驗證不能取代後端驗證。</li>
+            <li>分辨 innerHTML 和 textContent，安全地顯示使用者輸入。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="form" aria-labelledby="formTitle">
+          <p class="eyebrow">02 · TRY IT</p>
+          <h2 id="formTitle">註冊表單練習</h2>
+          <p>
+            請使用虛構資料測試。按送出後只會在這個頁面顯示結果，不會傳送或儲存資料。
+          </p>
+          <form class="registration-form" id="registerForm" novalidate>
+            <div class="form-field">
+              <label for="username">姓名</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autocomplete="name"
+                required
+                minlength="2"
+                aria-describedby="usernameError"
+              >
+              <small class="field-error" id="usernameError"></small>
+            </div>
+            <div class="form-field">
+              <label for="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                aria-describedby="emailError"
+              >
+              <small class="field-error" id="emailError"></small>
+            </div>
+            <div class="form-field">
+              <label for="password">密碼（練習欄位，不會送出或保存）</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                required
+                minlength="8"
+                aria-describedby="passwordError"
+              >
+              <small class="field-error" id="passwordError"></small>
+            </div>
+            <button class="practice-button" type="submit">檢查表單</button>
+          </form>
+          <p class="form-result" id="formResult" role="status" aria-live="polite">
+            表單結果會顯示在這裡。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="validation" aria-labelledby="validationTitle">
+          <p class="eyebrow">03 · VALIDATION</p>
+          <h2 id="validationTitle">驗證有兩層</h2>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>HTML 先檢查</h3>
+              <p><code>required</code>、<code>type="email"</code>、<code>minlength</code> 可以提供基本格式限制和使用者提示。</p>
+            </article>
+            <article class="role-card">
+              <h3>JavaScript 補充規則</h3>
+              <p>處理 trim 後的姓名長度、顯示欄位錯誤，以及表單成功後的畫面更新。</p>
+            </article>
+            <article class="role-card">
+              <h3>後端必須再驗證</h3>
+              <p>使用者可以停用 JavaScript 或直接呼叫 API；真正儲存資料前，伺服器仍要檢查輸入。</p>
+            </article>
+          </div>
+          <pre><code>form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  // 讀取輸入 → 驗證 → 更新畫面
+});</code></pre>
+        </section>
+
+        <section class="lesson-section" id="xss" aria-labelledby="xssTitle">
+          <p class="eyebrow">04 · XSS</p>
+          <h2 id="xssTitle">把輸入當文字，不要當 HTML</h2>
+          <div class="compare-grid">
+            <article class="role-card is-unsafe">
+              <h3>不安全：innerHTML</h3>
+              <pre><code>result.innerHTML = username;</code></pre>
+              <p>瀏覽器會把字串解析成 HTML；不可信內容可能被當成標記或程式處理。</p>
+            </article>
+            <article class="role-card is-safe">
+              <h3>安全顯示純文字：textContent</h3>
+              <pre><code>result.textContent = username;</code></pre>
+              <p>輸入會以純文字顯示，不會被解析成 HTML。本練習使用這種方式。</p>
+            </article>
+          </div>
+          <p>
+            可在姓名欄位測試像 <code>&lt;img src=x onerror=alert(1)&gt;</code> 這種字串；
+            安全的結果應該只是顯示字元，而不是執行任何內容。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="security" aria-labelledby="securityTitle">
+          <p class="eyebrow">05 · SECURITY RESPONSIBILITY</p>
+          <h2 id="securityTitle">前端驗證是體驗，後端驗證是必要防線</h2>
+          <p>
+            本頁表單僅作為瀏覽器練習，不會將姓名、Email 或密碼傳送到伺服器。
+            真正的註冊功能需要後端再次驗證，並安全處理密碼；不能只相信瀏覽器送來的內容。
+          </p>
+          <div class="note-panel w08-security-note">
+            <strong>練習安全習慣</strong>
+            <p>不要在公開網站或 GitHub 輸入、保存真實密碼或個人資料。也不要直接用 <code>innerHTML</code> 顯示未信任的使用者輸入。</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

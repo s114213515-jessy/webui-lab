@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta
+      name="description"
+      content="W4 學習 CSS Box Model、Flexbox、Grid、設計變數與 Mobile-first RWD。"
+    >
+    <title>W4 CSS 版面與 RWD</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w05.css">
+  </head>
+  <body>
+    <header class="lesson-topbar">
+      <a class="lesson-brand" href="./" aria-label="返回 WKE 教務系統首頁">
+        WKE <span>教務系統</span>
+      </a>
+      <nav class="lesson-page-links" aria-label="課程導覽">
+        <a href="w02.html">W2 課程</a>
+        <a href="w05.html">W5 課程</a>
+        <a href="./">返回儀表板</a>
+      </nav>
+    </header>
+
+    <div class="lesson-layout">
+      <nav class="lesson-toc" aria-label="W4 課程目錄">
+        <p class="lesson-toc-title">W4 課程目錄</p>
+        <a href="#goals">學習目標</a>
+        <a href="#layout">版面工具</a>
+        <a href="#box-model">Box Model</a>
+        <a href="#design-system">CSS 變數與主題</a>
+        <a href="#responsive">Mobile-first RWD</a>
+        <a href="#practice">檢查版面</a>
+      </nav>
+
+      <main class="lesson-content">
+        <section class="lesson-hero" aria-labelledby="lessonTitle">
+          <p class="eyebrow">WEB PROGRAMMING · WEEK 04</p>
+          <h1 id="lessonTitle">CSS 版面與 RWD</h1>
+          <p class="lesson-lead">
+            用適合的版面工具安排頁面，從手機尺寸開始設計，再逐步擴展到平板和桌機。
+          </p>
+          <div class="lesson-hero-flow" aria-label="本週核心流程">
+            <span>Mobile first</span><span aria-hidden="true">→</span>
+            <span>Flexible layout</span><span aria-hidden="true">→</span>
+            <span>Breakpoints</span><span aria-hidden="true">→</span>
+            <span>Responsive check</span>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="goals" aria-labelledby="goalsTitle">
+          <p class="eyebrow">01 · LEARNING GOALS</p>
+          <h2 id="goalsTitle">完成本週後，你可以</h2>
+          <ul class="goal-list">
+            <li>用 CSS Box Model 理解元素的大小、內距、邊框和外距。</li>
+            <li>判斷頁面區塊適合使用 Grid 還是 Flexbox。</li>
+            <li>用 CSS 變數集中管理顏色、間距和主題。</li>
+            <li>從手機版開始設計，並在不同視窗寬度檢查版面。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="layout" aria-labelledby="layoutTitle">
+          <p class="eyebrow">02 · GRID OR FLEX?</p>
+          <h2 id="layoutTitle">先看版面是一維還是二維</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>工具</th><th>適合情境</th><th>教務儀表板例子</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Grid</code></td>
+                  <td>同時安排欄和列，處理二維版面</td>
+                  <td>側邊欄加主要內容；多欄摘要卡片</td>
+                </tr>
+                <tr>
+                  <td><code>Flexbox</code></td>
+                  <td>沿單一方向排列和對齊</td>
+                  <td>頂部按鈕列、導覽連結、卡片內操作列</td>
+                </tr>
+                <tr>
+                  <td><code>gap</code></td>
+                  <td>控制 Grid 或 Flex 項目之間的距離</td>
+                  <td>統一欄位與卡片間距</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note-panel">
+            <strong>簡單判斷方式</strong>
+            <p>先決定整個頁面的大區塊，再用 Grid 排主結構；某一區內的按鈕或連結若只沿一排排列，通常 Flexbox 就很適合。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="box-model" aria-labelledby="boxModelTitle">
+          <p class="eyebrow">03 · BOX MODEL</p>
+          <h2 id="boxModelTitle">每個元素都可以想成一個盒子</h2>
+          <div class="flow-card">
+            <div><span class="flow-label">內容到邊框的空間</span><strong>padding</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">元素外側的線</span><strong>border</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">盒子與其他元素的距離</span><strong>margin</strong></div>
+          </div>
+          <pre><code>*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}</code></pre>
+          <p>
+            使用 <code>border-box</code> 後，設定的寬度會包含 padding 和 border，
+            比較容易預測卡片實際佔用的空間。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="design-system" aria-labelledby="designSystemTitle">
+          <p class="eyebrow">04 · CSS VARIABLES</p>
+          <h2 id="designSystemTitle">把常用樣式集中管理</h2>
+          <pre><code>:root {
+  --color-page: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-text: #182230;
+  --color-accent: #3559c7;
+  --space-page: 1rem;
+}</code></pre>
+          <p>
+            使用 CSS 變數後，如果要調整網站主色或背景，就能集中修改，不必到處尋找相同的顏色值。
+            深色模式也可以覆寫這些變數，讓多個元件一起切換。
+          </p>
+          <p class="lesson-action">
+            <a class="practice-button" href="./">回首頁試試深色模式</a>
+          </p>
+        </section>
+
+        <section class="lesson-section" id="responsive" aria-labelledby="responsiveTitle">
+          <p class="eyebrow">05 · MOBILE FIRST RWD</p>
+          <h2 id="responsiveTitle">先讓小螢幕好用，再增加空間</h2>
+          <p>
+            手機螢幕較窄，先安排單欄內容和容易點擊的操作；寬度增加後，再用 media query
+            加入側邊欄或多欄卡片。不要只為了符合某一台裝置設定固定寬度。
+          </p>
+          <pre><code>/* 預設先支援窄螢幕 */
+.page-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 空間足夠時才加入側邊欄 */
+@media (min-width: 48rem) {
+  .page-layout {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+}</code></pre>
+          <ul class="goal-list">
+            <li>內容不要超出視窗，卡片可以自動換行。</li>
+            <li>避免按鈕太小或彼此太靠近，影響觸控操作。</li>
+            <li>縮放瀏覽器寬度，檢查導覽、表格和卡片是否仍可閱讀。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="practice" aria-labelledby="practiceTitle">
+          <p class="eyebrow">06 · RESPONSIVE CHECK</p>
+          <h2 id="practiceTitle">檢查自己的儀表板</h2>
+          <ol class="workflow-list">
+            <li>在瀏覽器開啟開發者工具的裝置工具列，查看手機和桌機尺寸。</li>
+            <li>確認手機版側邊欄、摘要卡片和操作按鈕沒有互相擠壓。</li>
+            <li>找出哪裡用了 Grid、Flexbox、CSS 變數和 media query。</li>
+            <li>若有跑版，先檢查固定寬度、過大的間距和內容溢出，再調整斷點。</li>
+          </ol>
+          <p>
+            本專案首頁已使用窄螢幕單欄、寬螢幕側邊欄與 CSS 色彩變數；可以直接返回首頁觀察不同視窗寬度。
+          </p>
+          <p class="lesson-action">
+            <a class="practice-button" href="./">回到儀表板檢查 RWD</a>
+          </p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

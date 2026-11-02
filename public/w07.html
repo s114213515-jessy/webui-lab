@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta
+      name="description"
+      content="W7 練習 Event、Fetch API、HTTP、JSON 到 DOM 的完整資料流程。"
+    >
+    <title>W7 Fetch API：從資料到畫面</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w05.css">
+    <link rel="stylesheet" href="css/w07.css">
+  </head>
+  <body>
+    <header class="lesson-topbar">
+      <a class="lesson-brand" href="./" aria-label="返回 WKE 教務系統首頁">
+        WKE <span>教務系統</span>
+      </a>
+      <nav class="lesson-page-links" aria-label="課程導覽">
+        <a href="w06.html">W6 課程</a>
+        <a href="w08.html">W8 課程</a>
+        <a href="./">返回儀表板</a>
+      </nav>
+    </header>
+
+    <div class="lesson-layout">
+      <nav class="lesson-toc" aria-label="W7 課程目錄">
+        <p class="lesson-toc-title">W7 課程目錄</p>
+        <a href="#goals">學習目標</a>
+        <a href="#flow">資料流程</a>
+        <a href="#api-design">API 回應格式</a>
+        <a href="#practice">動手操作</a>
+        <a href="#debugging">檢查與除錯</a>
+      </nav>
+
+      <main class="lesson-content">
+        <section class="lesson-hero" aria-labelledby="lessonTitle">
+          <p class="eyebrow">WEB PROGRAMMING · WEEK 07</p>
+          <h1 id="lessonTitle">Fetch API：從資料到畫面</h1>
+          <p class="lesson-lead">
+            延續 W6，練習讓導覽和摘要卡片共用 API 資料，點擊後再載入詳細資料。
+          </p>
+          <div class="lesson-hero-flow" aria-label="本週核心流程">
+            <span>Event</span><span aria-hidden="true">→</span>
+            <span>Function</span><span aria-hidden="true">→</span>
+            <span>fetch()</span><span aria-hidden="true">→</span>
+            <span>HTTP / JSON</span><span aria-hidden="true">→</span>
+            <span>DOM</span>
+          </div>
+          <p class="lesson-caption">
+            本專案使用 FastAPI 提供的虛構範例資料，不連接真實校務資料或外部服務。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="goals" aria-labelledby="goalsTitle">
+          <p class="eyebrow">01 · LEARNING GOALS</p>
+          <h2 id="goalsTitle">完成本週後，你可以</h2>
+          <ul class="goal-list">
+            <li>解釋使用者點擊如何一路觸發 Fetch，最後更新網頁內容。</li>
+            <li>從 API 的 JSON 摘要建立導覽項目和儀表板卡片。</li>
+            <li>點選分類後取得詳細資料，並用 DOM 顯示欄位。</li>
+            <li>使用 Network、Console 和 HTTP status 檢查錯誤，不把失敗當成空資料。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="flow" aria-labelledby="flowTitle">
+          <p class="eyebrow">02 · EVENT TO DOM</p>
+          <h2 id="flowTitle">一個點擊如何變成資料畫面？</h2>
+          <div class="flow-card w07-flow-card">
+            <div><span class="flow-label">Event</span><strong>點選系所</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">Function</span><strong>loadCategory()</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">HTTP / JSON</span><strong>GET 分類資料</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">DOM</span><strong>顯示資料表格</strong></div>
+          </div>
+          <pre><code>const response = await fetch("api/root");
+if (!response.ok) {
+  throw new Error(`HTTP ${response.status}`);
+}
+const categories = await response.json();
+renderCategories(categories);</code></pre>
+          <p>
+            `await` 讓程式等候請求結果；`response.ok` 檢查 HTTP 狀態；
+            `response.json()` 把回應內容解析成 JavaScript 資料。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="api-design" aria-labelledby="apiDesignTitle">
+          <p class="eyebrow">03 · API SHAPE</p>
+          <h2 id="apiDesignTitle">摘要和詳細資料分開取得</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>用途</th><th>請求</th><th>回傳資料</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>建立固定導覽與摘要卡片</td>
+                  <td><code>GET api/root</code></td>
+                  <td><code>cid</code>、<code>name</code>、<code>n</code></td>
+                </tr>
+                <tr>
+                  <td>點擊分類後讀取詳細資料</td>
+                  <td><code>GET api/root/co/{cid}</code></td>
+                  <td>該分類中的範例物件陣列</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note-panel">
+            <strong>為什麼要共用同一份摘要資料？</strong>
+            <p>同一份 `/api/root` 回應會用來建立側邊導覽和摘要卡片，避免兩邊各自維護資料而顯示不一致。選取項目的詳細資料則按需要再取得。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="practice" aria-labelledby="practiceTitle">
+          <p class="eyebrow">04 · TRY IT</p>
+          <h2 id="practiceTitle">動手操作</h2>
+          <ol class="workflow-list">
+            <li>回到儀表板，觀察系所、學期、課程等摘要卡片和側邊導覽。</li>
+            <li>點摘要卡片的「查看詳情」，再點側邊導覽中的其他分類。</li>
+            <li>開啟瀏覽器開發者工具的 Network，確認先載入 <code>api/root</code>，點擊後載入 <code>api/root/co/分類編號</code>。</li>
+            <li>檢查回應 JSON 的欄位，並確認頁面只顯示前四個欄位。</li>
+          </ol>
+          <p class="lesson-action">
+            <a class="practice-button" href="./">回到儀表板操作</a>
+          </p>
+          <div class="note-panel">
+            <strong>Event → Function → fetch() → HTTP/API → JSON → DOM</strong>
+            <p>每次操作都試著說出這六個步驟。若畫面沒有更新，先找出流程停在哪一步。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="debugging" aria-labelledby="debuggingTitle">
+          <p class="eyebrow">05 · DEBUGGING</p>
+          <h2 id="debuggingTitle">出錯時依序檢查</h2>
+          <ol class="debug-list">
+            <li>Network 有沒有送出請求？URL 和分類編號正確嗎？</li>
+            <li>HTTP status 是成功、404，還是連線錯誤？</li>
+            <li>回應能否解析成 JSON？資料欄位是否符合預期？</li>
+            <li>事件有沒有呼叫正確的 function？render 是否更新 DOM？</li>
+            <li>資料放進畫面時是否以純文字方式處理？</li>
+          </ol>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

@@ -11,10 +11,29 @@ Web Programming 課程實作專案。
 - **問題**：教務工作需要快速查看常用功能與摘要；本專案用儀表板原型練習資訊分區與導覽。
 - **目標使用者**：課程展示情境中的教師或教務人員；尚未進行實際使用者訪談。
 - **核心功能**：切換儀表板功能、查看範例摘要卡片、切換深色模式。
-- **資料**：`public/json/` 中的虛構導覽項目與摘要資料。
-- **外部 API**：目前沒有；資料由靜態 JSON 提供。
+- **資料**：`public/json/` 的虛構 W6 範例資料，以及 W7 FastAPI 提供的虛構分類 API。
+- **外部 API**：目前沒有；W7 API 是本機示範端點，不連接真實校務資料或外部服務。
 - **安全與隱私**：目前沒有真正的登入，也不存放真實師生資料；公開網站中的前端與 JSON 資料皆可被訪客讀取。
 - **MVP 範圍**：完成響應式靜態儀表板與範例資料展示；資料庫、真實帳號驗證與教務系統整合不在目前範圍。
+
+## W2：Web UI and HTML
+
+首頁提供 W2 課程入口，或直接開啟 `public/w02.html`。教材介紹頁面區域、語意化 HTML 標籤
+（如 `header`、`nav`、`main`、`aside`、`section`、`form`），並用 Problem、Target Users、
+Core Features、Data、Security / Privacy 和 MVP 練習規劃網站。
+
+```text
+http://127.0.0.1:7777/w02.html
+```
+
+## W4：CSS 版面與 RWD
+
+首頁提供 W4 課程入口，或直接開啟 `public/w04.html`。教材整理 Box Model、Grid 與 Flexbox
+的用途、CSS 變數和深色模式，以及從手機版開始設計並檢查不同螢幕的 RWD 方法。
+
+```text
+http://127.0.0.1:7777/w04.html
+```
 
 ## W5：JavaScript DOM 與事件處理
 
@@ -42,6 +61,31 @@ Google API 設定檢查與 AI Coding Review。頁面中的互動練習會 fetch 
 
 ```text
 http://127.0.0.1:7777/w06.html
+```
+
+## W7：Fetch API、API 與 DOM
+
+首頁的側邊導覽和摘要卡片共用 `GET /api/root` 的虛構資料；點選分類後，前端呼叫
+`GET /api/root/co/{cid}`，再將回應資料的前四個欄位顯示在表格。這是同一來源資料的
+端到端練習，不連接真實校務資料或外部 API。
+
+教材頁：
+
+```text
+http://127.0.0.1:7777/w07.html
+```
+
+可在瀏覽器開發者工具的 Network 面板觀察請求，再依序檢查 HTTP status、JSON 和 DOM。
+
+## W8：表單與輸入驗證
+
+`w08.html` 提供姓名、Email 和密碼欄位的前端驗證練習，並以 `textContent` 安全顯示使用者輸入。
+表單只在瀏覽器中驗證，不會送出或保存資料；實際產品仍須由後端再次驗證。
+
+教材頁：
+
+```text
+http://127.0.0.1:7777/w08.html
 ```
 
 ## W1：本機預覽
@@ -82,13 +126,20 @@ public/
 ├── css/
 │   ├── style.css
 │   ├── w05.css
-│   └── w06.css
+│   ├── w06.css
+│   ├── w07.css
+│   └── w08.css
 ├── js/
 │   ├── app.js
 │   ├── w05.js
-│   └── w06.js
+│   ├── w06.js
+│   └── w08.js
+├── w02.html
+├── w04.html
 ├── w05.html
 ├── w06.html
+├── w07.html
+├── w08.html
 └── json/
     ├── teacher_ops.json
     └── dashboard_cards.json

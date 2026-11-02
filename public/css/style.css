@@ -151,6 +151,49 @@ a {
   text-decoration: underline;
 }
 
+.course-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+}
+
+.card-action {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.6rem;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.card-action:hover {
+  border-color: var(--color-accent);
+}
+
+.object-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.object-table th,
+.object-table td {
+  padding: 0.7rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.object-table th {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .eyebrow {
   margin: 0;
   color: var(--color-accent);

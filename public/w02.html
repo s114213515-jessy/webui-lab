@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta
+      name="description"
+      content="W2 認識 Web UI、HTML 文件結構與語意化標籤，並規劃網站 MVP。"
+    >
+    <title>W2 Web UI and HTML</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w05.css">
+  </head>
+  <body>
+    <header class="lesson-topbar">
+      <a class="lesson-brand" href="./" aria-label="返回 WKE 教務系統首頁">
+        WKE <span>教務系統</span>
+      </a>
+      <nav class="lesson-page-links" aria-label="課程導覽">
+        <a href="w04.html">W4 課程</a>
+        <a href="./">返回儀表板</a>
+      </nav>
+    </header>
+
+    <div class="lesson-layout">
+      <nav class="lesson-toc" aria-label="W2 課程目錄">
+        <p class="lesson-toc-title">W2 課程目錄</p>
+        <a href="#goals">學習目標</a>
+        <a href="#structure">HTML 文件結構</a>
+        <a href="#semantic">語意化標籤</a>
+        <a href="#project">網站規劃</a>
+        <a href="#practice">動手檢查</a>
+      </nav>
+
+      <main class="lesson-content">
+        <section class="lesson-hero" aria-labelledby="lessonTitle">
+          <p class="eyebrow">WEB PROGRAMMING · WEEK 02</p>
+          <h1 id="lessonTitle">Web UI and HTML</h1>
+          <p class="lesson-lead">
+            先看懂網頁有哪些區域、各區域要做什麼，再用合適的 HTML 標籤把內容組織起來。
+          </p>
+          <div class="lesson-hero-flow" aria-label="本週核心流程">
+            <span>使用者需求</span><span aria-hidden="true">→</span>
+            <span>頁面區塊</span><span aria-hidden="true">→</span>
+            <span>HTML 結構</span><span aria-hidden="true">→</span>
+            <span>瀏覽器呈現</span>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="goals" aria-labelledby="goalsTitle">
+          <p class="eyebrow">01 · LEARNING GOALS</p>
+          <h2 id="goalsTitle">完成本週後，你可以</h2>
+          <ul class="goal-list">
+            <li>辨認頁面中的側邊欄、主要內容、標題和輸入表單。</li>
+            <li>挑選適合用途的語意化 HTML 標籤，而不是所有東西都用 <code>div</code>。</li>
+            <li>用目標使用者、核心功能和 MVP 說明網站要解決什麼問題。</li>
+            <li>讓 HTML 結構清楚，之後較容易加上 CSS 和 JavaScript。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="structure" aria-labelledby="structureTitle">
+          <p class="eyebrow">02 · PAGE STRUCTURE</p>
+          <h2 id="structureTitle">先把頁面想成幾個區域</h2>
+          <div class="flow-card">
+            <div><span class="flow-label">頁面頂部</span><strong>header</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">輔助／導覽</span><strong>aside / nav</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">主要內容</span><strong>main</strong></div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div><span class="flow-label">頁面底部</span><strong>footer</strong></div>
+          </div>
+          <p>
+            HTML 負責描述內容和結構；CSS 之後再負責顏色、間距和版面。先把區域分清楚，
+            看程式時就比較容易知道某段內容屬於哪裡。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="semantic" aria-labelledby="semanticTitle">
+          <p class="eyebrow">03 · SEMANTIC HTML</p>
+          <h2 id="semanticTitle">標籤名稱也在說明內容的用途</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>標籤</th><th>常見用途</th><th>儀表板例子</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>header</code></td><td>頁面或區塊的頂部資訊</td><td>網站名稱和登入按鈕</td></tr>
+                <tr><td><code>nav</code></td><td>主要導覽連結</td><td>側邊功能選單、課程連結</td></tr>
+                <tr><td><code>main</code></td><td>頁面主要內容</td><td>摘要卡片和目前頁面內容</td></tr>
+                <tr><td><code>aside</code></td><td>補充或相鄰內容</td><td>側邊欄</td></tr>
+                <tr><td><code>section</code></td><td>同一主題的內容區塊</td><td>儀表板摘要區</td></tr>
+                <tr><td><code>form</code></td><td>輸入與提交資料</td><td>搜尋或登入欄位</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note-panel">
+            <strong>那 div 和 span 呢？</strong>
+            <p><code>div</code> 和 <code>span</code> 是一般容器，本身不表示內容的角色。沒有更合適的語意標籤時可以使用，但不需要把整個網站都寫成 div。</p>
+          </div>
+          <p>
+            語意化結構能幫助開發者閱讀，也讓瀏覽器、搜尋引擎和螢幕閱讀器更容易理解頁面。
+            例如側邊欄如果主要用來切換頁面，可以在其中使用 <code>nav</code>。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="project" aria-labelledby="projectTitle">
+          <p class="eyebrow">04 · PROJECT MILESTONE</p>
+          <h2 id="projectTitle">動手寫出網站規劃</h2>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>Problem</h3>
+              <p>使用者遇到什麼問題？為什麼需要這個網站？</p>
+            </article>
+            <article class="role-card">
+              <h3>Target Users</h3>
+              <p>誰會使用？他們需要完成什麼事情？</p>
+            </article>
+            <article class="role-card">
+              <h3>Core Features</h3>
+              <p>最重要的兩、三個功能是什麼？</p>
+            </article>
+            <article class="role-card">
+              <h3>Data &amp; API</h3>
+              <p>需要哪些資料？目前是範例資料，還是需要串接 API？</p>
+            </article>
+            <article class="role-card">
+              <h3>Security / Privacy</h3>
+              <p>資料中有沒有個資、密碼或不應公開的內容？</p>
+            </article>
+            <article class="role-card">
+              <h3>MVP</h3>
+              <p>時間有限時，最少完成哪些功能，作品才有基本用途？</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="practice" aria-labelledby="practiceTitle">
+          <p class="eyebrow">05 · CHECK YOUR PAGE</p>
+          <h2 id="practiceTitle">用自己的首頁練習</h2>
+          <ol class="workflow-list">
+            <li>在首頁找出 <code>header</code>、<code>aside</code>、<code>nav</code>、<code>main</code> 和 <code>footer</code>。</li>
+            <li>檢查標題層級是否合理：主要標題用一個 <code>h1</code>，內容區塊再用 <code>h2</code>。</li>
+            <li>想想哪些地方是主要內容、哪些只是輔助資訊，為它們選擇適合的標籤。</li>
+            <li>用 Problem、Target Users、Core Features 和 MVP 說明自己的網站。</li>
+          </ol>
+          <p class="lesson-action">
+            <a class="practice-button" href="./">回到儀表板檢查</a>
+          </p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
