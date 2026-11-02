@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta
+      name="description"
+      content="W1 認識 VS Code、Node.js、Git、GitHub 與本機開發環境。"
+    >
+    <title>W1 環境與 Git</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w05.css">
+  </head>
+  <body>
+    <header class="lesson-topbar">
+      <a class="lesson-brand" href="./" aria-label="返回 WKE 教務系統首頁">
+        WKE <span>教務系統</span>
+      </a>
+      <nav class="lesson-page-links" aria-label="課程導覽">
+        <a href="w02.html">下一課：W2 HTML</a>
+        <a href="./">返回儀表板</a>
+      </nav>
+    </header>
+
+    <div class="lesson-layout">
+      <nav class="lesson-toc" aria-label="W1 課程目錄">
+        <p class="lesson-toc-title">W1 課程目錄</p>
+        <a href="#goals">學習目標</a>
+        <a href="#tools">工具分工</a>
+        <a href="#environment">檢查環境</a>
+        <a href="#git">Git 專案管理</a>
+        <a href="#practice">動手檢查</a>
+      </nav>
+
+      <main class="lesson-content">
+        <section class="lesson-hero" aria-labelledby="lessonTitle">
+          <p class="eyebrow">WEB PROGRAMMING · WEEK 01</p>
+          <h1 id="lessonTitle">環境與 Git</h1>
+          <p class="lesson-lead">
+            先確認寫程式、執行程式和保存版本的工具各自負責什麼，再開始建立網站。
+          </p>
+          <div class="lesson-hero-flow" aria-label="本週工具流程">
+            <span>VS Code</span><span aria-hidden="true">→</span>
+            <span>專案資料夾</span><span aria-hidden="true">→</span>
+            <span>Git</span><span aria-hidden="true">→</span>
+            <span>GitHub</span>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="goals" aria-labelledby="goalsTitle">
+          <p class="eyebrow">01 · LEARNING GOALS</p>
+          <h2 id="goalsTitle">完成本週後，你可以</h2>
+          <ul class="goal-list">
+            <li>分辨編輯器、JavaScript 執行環境、版本控制和遠端儲存庫的工作。</li>
+            <li>從 VS Code 終端機確認 Node.js、npm 和 Git 可以使用。</li>
+            <li>用 Git 記錄修改，並理解本機 repository 和 GitHub repository 的差異。</li>
+            <li>在專案開始時設定忽略規則，避免提交依賴套件或秘密設定。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="tools" aria-labelledby="toolsTitle">
+          <p class="eyebrow">02 · TOOL RESPONSIBILITIES</p>
+          <h2 id="toolsTitle">工具各自負責不同工作</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>工具</th><th>用途</th><th>要記住的差別</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>VS Code</td>
+                  <td>編輯檔案、查看程式和使用終端機</td>
+                  <td>它是編輯工具，不是 GitHub 或網站伺服器。</td>
+                </tr>
+                <tr>
+                  <td>Node.js / npm</td>
+                  <td>在瀏覽器以外執行 JavaScript，管理 JavaScript 套件與工具</td>
+                  <td>瀏覽器本身也能執行前端 JavaScript；Node.js 讓開發工具能在本機執行。</td>
+                </tr>
+                <tr>
+                  <td>Git</td>
+                  <td>在本機追蹤檔案變更並建立版本</td>
+                  <td>commit 先存在本機，不會自動出現在 GitHub。</td>
+                </tr>
+                <tr>
+                  <td>GitHub</td>
+                  <td>託管遠端 repository，分享程式和版本歷史</td>
+                  <td>push 才會把本機提交同步到遠端。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="environment" aria-labelledby="environmentTitle">
+          <p class="eyebrow">03 · CHECK YOUR ENVIRONMENT</p>
+          <h2 id="environmentTitle">從終端機確認工具可用</h2>
+          <pre><code>node --version
+npm --version
+git --version</code></pre>
+          <p>
+            終端機若找不到指令，常見原因是程式未安裝，或執行檔路徑未加入 PATH。
+            Windows 使用者權限不足時，教材示範將 Node.js ZIP 解壓至個人目錄，再設定使用者 PATH；
+            PATH 更新後通常要重新開啟 VS Code 才會套用。
+          </p>
+          <div class="note-panel">
+            <strong>遇到 PowerShell 的 npm 執行限制</strong>
+            <p>本專案紀錄的做法是使用 <code>npm.cmd</code>，而不是為了方便就放寬整台電腦的執行原則。先看錯誤原因，再選擇影響範圍較小的處理方式。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="git" aria-labelledby="gitTitle">
+          <p class="eyebrow">04 · VERSION CONTROL</p>
+          <h2 id="gitTitle">用 Git 忽略不該追蹤的檔案</h2>
+          <p>
+            <code>.gitignore</code> 用來指定 Git 不需要追蹤的檔案，例如套件資料夾、建置產物、
+            編輯器暫存檔和本機環境設定。密碼或 token 不應提交到 repository；
+            如果秘密已經提交，單純新增忽略規則並不會從既有 Git 歷史中移除它。
+          </p>
+          <pre><code>git status
+git add .
+git commit -m "建立專案起始版本"
+git push -u origin main</code></pre>
+          <p>
+            第一次推送使用 <code>git push -u origin main</code>，同時設定遠端追蹤分支；
+            後續才可直接使用 <code>git push</code>。commit 是本機版本紀錄，push 才是送到 GitHub 的步驟。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="practice" aria-labelledby="practiceTitle">
+          <p class="eyebrow">05 · CHECKPOINT</p>
+          <h2 id="practiceTitle">建立本機預覽並確認範圍</h2>
+          <p>
+            本專案的本機預覽綁定 <code>127.0.0.1</code>，表示只供目前這台電腦使用。
+            確認首頁能開啟後，再檢查 Git 狀態和提交紀錄。
+          </p>
+          <ol class="workflow-list">
+            <li>確認三個版本指令都有回應。</li>
+            <li>確認專案有適合的 <code>.gitignore</code>，沒有加入秘密或個人資料。</li>
+            <li>用 <code>git status</code> 和 <code>git log --oneline</code> 檢查版本狀態。</li>
+            <li>分別確認本機預覽、Git commit 和 GitHub push 的作用。</li>
+          </ol>
+          <p class="lesson-action">
+            <a class="practice-button" href="./">回到儀表板</a>
+          </p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

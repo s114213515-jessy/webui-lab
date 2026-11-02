@@ -1,14 +1,3 @@
-.lesson-page-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.9rem;
-}
-
-.lesson-page-links a {
-  color: var(--color-accent);
-  font-weight: 700;
-}
-
 .w06-flow-card > div {
   min-width: 9rem;
 }

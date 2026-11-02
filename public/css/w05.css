@@ -37,6 +37,17 @@
   font-weight: 700;
 }
 
+.lesson-page-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.lesson-page-links a {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 .lesson-layout {
   display: grid;
   width: min(100%, 90rem);

@@ -16,6 +16,22 @@ Web Programming 課程實作專案。
 - **安全與隱私**：目前沒有真正的登入，也不存放真實師生資料；公開網站中的前端與 JSON 資料皆可被訪客讀取。
 - **MVP 範圍**：完成響應式靜態儀表板與範例資料展示；資料庫、真實帳號驗證與教務系統整合不在目前範圍。
 
+## W1：環境與 Git
+
+首頁提供 W1 課程入口，或直接開啟 `public/w01.html`。教材整理 VS Code、Node.js、Git 和 GitHub
+各自負責的工作，並說明終端機檢查、PATH、`.gitignore`、本機 commit 與遠端 push 的差別。
+本機預覽命令如下，服務只綁定 `127.0.0.1`：
+
+```powershell
+npx.cmd http-server public -p 3000 -a 127.0.0.1
+```
+
+```text
+http://127.0.0.1:3000/
+```
+
+按 `Ctrl+C` 停止服務。不要為了方便就把開發預覽公開到網路。
+
 ## W2：Web UI and HTML
 
 首頁提供 W2 課程入口，或直接開啟 `public/w02.html`。教材介紹頁面區域、語意化 HTML 標籤
@@ -25,6 +41,34 @@ Core Features、Data、Security / Privacy 和 MVP 練習規劃網站。
 ```text
 http://127.0.0.1:7777/w02.html
 ```
+
+## W3：從本機開發到公開部署
+
+首頁提供 W3 課程入口，或直接開啟 `public/w03.html`。教材說明 ASGI、Uvicorn、FastAPI 靜態檔案服務，
+以及 IIS URL Rewrite / ARR 反向代理的角色。它也區分本機可用與公開部署驗收；本專案已驗證本機服務，
+但 IIS 子路徑和公開網址仍須依授課環境實測。
+
+使用 Python 3.10 以上版本，在 repo 根目錄執行：
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+uvicorn server:app --reload --host 127.0.0.1 --port 7777
+```
+
+```text
+http://127.0.0.1:7777/
+```
+
+若 PowerShell 阻擋虛擬環境啟動，可在目前終端機暫時執行：
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
+
+公開部署須依授課老師提供的子路徑、網路及防火牆設定操作；未經授權不要以 `0.0.0.0` 對外公開開發伺服器。
 
 ## W4：CSS 版面與 RWD
 
@@ -37,27 +81,20 @@ http://127.0.0.1:7777/w04.html
 
 ## W5：JavaScript DOM 與事件處理
 
-首頁提供 W5 課程入口，或直接開啟 `public/w05.html`。教材包含本週目標、`app.js` top-down
-閱讀方式、Event → Function → DOM 心智模型、互動示範、AI Prompt 範本、DOM/Event
-速查、Debugging 步驟、練習和 Code Review 清單。
-
-本機啟動 FastAPI 後可瀏覽：
+首頁提供 W5 課程入口，或直接開啟 `public/w05.html`。教材包含 `app.js` top-down 閱讀、
+Event → Function → DOM 心智模型、互動示範、AI Prompt、Debugging 和 Code Review。
+頁面使用相對資產路徑，支援網域根目錄或 GitHub Pages 專案子路徑。
 
 ```text
 http://127.0.0.1:7777/w05.html
 ```
 
-W5 示範頁使用相對資產路徑，支援將 repo 部署在網域根目錄或 GitHub Pages 專案子路徑。
-
 ## W6：Fetch API / AJAX
 
-首頁提供 W6 課程入口，或直接開啟 `public/w06.html`。課程整理 Fetch/AJAX、
-HTTP 狀態處理、API Key 與 OAuth、前端 Secret 安全、CORS / Preflight、
-Google API 設定檢查與 AI Coding Review。頁面中的互動練習會 fetch 本 repo 的範例 JSON；
-「HTTP 404」選項用來練習 HTTP 錯誤處理。這是前端教學示範，不會呼叫 Google API，
+首頁提供 W6 課程入口，或直接開啟 `public/w06.html`。課程整理 Fetch/AJAX、HTTP 狀態、
+API Key 與 OAuth、前端 Secret 安全、CORS / Preflight 和 AI Coding Review。
+互動練習只 fetch repo 的範例 JSON，並以不存在的路徑練習 HTTP 404；不呼叫 Google API，
 也不包含 OAuth 登入或任何憑證。
-
-本機啟動 FastAPI 後可瀏覽：
 
 ```text
 http://127.0.0.1:7777/w06.html
@@ -65,58 +102,24 @@ http://127.0.0.1:7777/w06.html
 
 ## W7：Fetch API、API 與 DOM
 
-首頁的側邊導覽和摘要卡片共用 `GET /api/root` 的虛構資料；點選分類後，前端呼叫
-`GET /api/root/co/{cid}`，再將回應資料的前四個欄位顯示在表格。這是同一來源資料的
-端到端練習，不連接真實校務資料或外部 API。
-
-教材頁：
+首頁側邊導覽和摘要卡片共用 `GET /api/root` 的虛構資料；點選分類後，前端呼叫
+`GET /api/root/co/{cid}`，並將回應資料的前四個欄位顯示在表格。這是本機端到端練習，
+不連接真實校務資料或外部 API。
 
 ```text
 http://127.0.0.1:7777/w07.html
 ```
 
-可在瀏覽器開發者工具的 Network 面板觀察請求，再依序檢查 HTTP status、JSON 和 DOM。
+可在瀏覽器 Network 面板觀察請求，再依序檢查 HTTP status、JSON 和 DOM。
 
 ## W8：表單與輸入驗證
 
-`w08.html` 提供姓名、Email 和密碼欄位的前端驗證練習，並以 `textContent` 安全顯示使用者輸入。
+`public/w08.html` 提供姓名、Email 和密碼欄位的前端驗證練習，使用 `textContent` 安全顯示輸入。
 表單只在瀏覽器中驗證，不會送出或保存資料；實際產品仍須由後端再次驗證。
-
-教材頁：
 
 ```text
 http://127.0.0.1:7777/w08.html
 ```
-
-## W1：本機預覽
-
-先確認已安裝 Node.js 與 Git。在 repo 根目錄的 PowerShell 執行：
-
-```powershell
-npx.cmd http-server public -p 3000 -a 127.0.0.1
-```
-
-瀏覽 http://127.0.0.1:3000/。按 `Ctrl+C` 停止伺服器。此設定只供本機預覽，不對區域網路公開。
-
-## W3：FastAPI 本機執行
-
-使用 Python 3.10 以上版本。在 repo 根目錄建立虛擬環境並安裝依賴：
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-uvicorn server:app --reload --host 127.0.0.1 --port 7777
-```
-
-瀏覽 http://127.0.0.1:7777/。若 PowerShell 阻擋虛擬環境啟動，可在目前終端機暫時執行：
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\.venv\Scripts\Activate.ps1
-```
-
-課程 IIS 部署請依授課老師提供的子路徑、網路及防火牆設定操作。不要未經授權就以 `0.0.0.0` 對外公開開發伺服器。
 
 ## 專案結構
 
@@ -134,7 +137,9 @@ public/
 │   ├── w05.js
 │   ├── w06.js
 │   └── w08.js
+├── w01.html
 ├── w02.html
+├── w03.html
 ├── w04.html
 ├── w05.html
 ├── w06.html
