@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="./">
+    <meta
+      name="description"
+      content="W9 認識 OAuth 2.0、OpenID Connect、Token、JWT 與個人資料保護。"
+    >
+    <title>W9 OAuth、登入與 Token</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/w05.css">
+    <link rel="stylesheet" href="css/w09.css">
+    <script src="js/w09.js" defer></script>
+  </head>
+  <body>
+    <header class="lesson-topbar">
+      <a class="lesson-brand" href="./" aria-label="返回 WKE 教務系統首頁">
+        WKE <span>教務系統</span>
+      </a>
+      <nav class="lesson-page-links" aria-label="課程導覽">
+        <a href="w08.html">W8 課程</a>
+        <a href="./">返回儀表板</a>
+      </nav>
+    </header>
+
+    <div class="lesson-layout">
+      <nav class="lesson-toc" aria-label="W9 課程目錄">
+        <p class="lesson-toc-title">W9 課程目錄</p>
+        <a href="#vocabulary">先認識名詞</a>
+        <a href="#goals">學習目標</a>
+        <a href="#auth">身分驗證與授權</a>
+        <a href="#oauth">OAuth 與 OIDC</a>
+        <a href="#token">Token 與 JWT</a>
+        <a href="#practice">登入示範</a>
+        <a href="#privacy">個人資料保護</a>
+        <a href="#review">課後思考</a>
+      </nav>
+
+      <main class="lesson-content">
+        <section class="lesson-hero" aria-labelledby="lessonTitle">
+          <p class="eyebrow">WEB PROGRAMMING · WEEK 09</p>
+          <h1 id="lessonTitle">OAuth、使用者登入與 Token</h1>
+          <p class="lesson-lead">
+            認識網站如何確認使用者身分、維持登入狀態，以及為什麼登入成功仍不代表可以讀取所有資料。
+          </p>
+          <div class="lesson-hero-flow" aria-label="本週核心流程">
+            <span>登入身分</span><span aria-hidden="true">→</span>
+            <span>Token / Session</span><span aria-hidden="true">→</span>
+            <span>伺服器驗證</span><span aria-hidden="true">→</span>
+            <span>檢查使用權限</span>
+          </div>
+          <p class="lesson-caption">
+            本頁只有瀏覽器端模擬，不會連接 Google、驗證帳號、傳送密碼或保護儀表板 API。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="vocabulary" aria-labelledby="vocabularyTitle">
+          <p class="eyebrow">START HERE · KEY WORDS</p>
+          <h2 id="vocabularyTitle">先用白話認識幾個名詞</h2>
+          <p>這些英文名稱看起來很多，其實是在回答不同問題。先記住它們各自的工作，再看後面的流程會比較容易。</p>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>帳號</h3>
+              <p>用來辨認使用者的名稱，例如 Email 或學校提供的帳號。帳號本身不一定能證明使用者就是本人。</p>
+            </article>
+            <article class="role-card">
+              <h3>登入憑證</h3>
+              <p>用來證明登入狀態的資料，可以想成通行證。密碼、Session ID 或 Token 都需要小心保管。</p>
+            </article>
+            <article class="role-card">
+              <h3>伺服器</h3>
+              <p>網站後方負責處理請求的程式。真正的身分和權限檢查應在伺服器進行，而不是只靠畫面上的按鈕。</p>
+            </article>
+          </div>
+          <div class="note-panel">
+            <strong>一個簡單比喻</strong>
+            <p>把網站想成校園：帳號像學生的名字，登入驗證像出示證件，Token 或 Session ID 像通行憑證；但進入每一間教室之前，仍要確認這張證件是否有進入那間教室的權限。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="goals" aria-labelledby="goalsTitle">
+          <p class="eyebrow">01 · LEARNING GOALS</p>
+          <h2 id="goalsTitle">完成本週後，你可以</h2>
+          <ul class="goal-list">
+            <li>分辨 Authentication（確認身分）與 Authorization（檢查權限）。</li>
+            <li>說明 OAuth 2.0 與 OpenID Connect（OIDC）在第三方登入中的角色。</li>
+            <li>解釋 Token 和 JWT 的用途，以及 JWT 不等於加密資料。</li>
+            <li>理解伺服器仍須檢查使用者權限，不能只靠前端隱藏按鈕。</li>
+            <li>用資料最小化的想法檢視登入需要蒐集哪些個人資料。</li>
+          </ul>
+        </section>
+
+        <section class="lesson-section" id="auth" aria-labelledby="authTitle">
+          <p class="eyebrow">02 · AUTHENTICATION &amp; AUTHORIZATION</p>
+          <h2 id="authTitle">「你是誰？」和「你能做什麼？」不同</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>概念</th><th>要回答的問題</th><th>教務系統例子</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Authentication<br>身分驗證</td>
+                  <td>目前使用者是誰？</td>
+                  <td>確認登入者是學生 A 的帳號。</td>
+                </tr>
+                <tr>
+                  <td>Authorization<br>授權</td>
+                  <td>這個使用者可以做什麼？</td>
+                  <td>允許學生 A 查自己的成績，不允許查學生 B 的成績。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note-panel">
+            <strong>登入成功，不等於所有操作都被允許</strong>
+            <p>前端可以依角色顯示不同介面，但真正的資料保護必須由伺服器在每次 API 請求時檢查身分和權限。只把按鈕藏起來，並不能阻止使用者直接呼叫 API。可以把「登入」想成先通過校門；能不能進成績資料室，還要再看你的身分和權限。</p>
+          </div>
+          <p>
+            若伺服器無法確認有效登入狀態，常見回應是 <code>401 Unauthorized</code>；
+            身分已確認但不具備該資源權限，常見回應是 <code>403 Forbidden</code>。
+          </p>
+          <p>
+            例如，沒有提供有效登入憑證，伺服器不知道你是誰，可能回傳 401；如果已經確認你是學生 A，
+            但你要求讀取學生 B 的成績，伺服器知道你是誰、也知道這個要求不被允許，可能回傳 403。
+            這兩種錯誤的原因不同，不能只在前端把錯誤訊息改成「找不到資料」就當作處理完成。
+          </p>
+        </section>
+
+        <section class="lesson-section" id="oauth" aria-labelledby="oauthTitle">
+          <p class="eyebrow">03 · OAUTH 2.0 &amp; OIDC</p>
+          <h2 id="oauthTitle">「使用 Google 登入」背後有哪些角色？</h2>
+          <p>假設你想進入一個課程網站，但不想另外設定新密碼。網站可以請 Google 幫忙確認你的身分。Google 是負責確認身分的一方，課程網站是想讓你登入的服務；你的密碼留在 Google，不會直接交給課程網站。</p>
+          <ol class="workflow-list">
+            <li><strong>你開始登入：</strong>在課程網站按下 Google 登入，瀏覽器前往 Google 的官方登入與同意頁面。</li>
+            <li><strong>Google 確認身分：</strong>你在 Google 輸入資料或使用已登入的 Google 帳號；課程網站不會直接看到你的 Google 密碼。</li>
+            <li><strong>你確認要分享什麼：</strong>Google 會依要求顯示必要的資訊或權限，讓你決定是否同意。網站不應要求與功能無關的權限。</li>
+            <li><strong>結果回到網站：</strong>Google 把流程結果送回事先設定好的回呼位置；這個網址設定錯誤，登入流程就可能失敗。</li>
+            <li><strong>網站建立自己的登入狀態：</strong>後端確認結果有效後，才讓你登入課程網站。網站接著仍要判斷你可以使用哪些功能。</li>
+          </ol>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>OAuth 2.0</h3>
+              <p>主要處理授權：應用程式可否取得使用者同意的特定資源存取權。</p>
+            </article>
+            <article class="role-card">
+              <h3>OpenID Connect</h3>
+              <p>建立在 OAuth 2.0 上，提供確認使用者身分的標準方式；常見於第三方登入。</p>
+            </article>
+            <article class="role-card">
+              <h3>網站自己的登入狀態</h3>
+              <p>Google 登入完成後，網站仍需管理自己的 Session 或 Token，並自行檢查本網站的使用權限。</p>
+            </article>
+          </div>
+          <div class="note-panel">
+            <strong>OAuth 2.0 和 OIDC 為什麼常一起出現？</strong>
+            <p>OAuth 2.0 的重點是「允許某個應用程式取得哪些資源的存取權」；但單靠 OAuth 2.0 並不是一套完整的登入身分標準。OpenID Connect（OIDC）建立在 OAuth 2.0 上，補上確認使用者身分的方式，所以「使用 Google 登入」通常會一起用到 OIDC。</p>
+          </div>
+          <p>
+            使用第三方登入不會把 Google 密碼交給這個網站，也不代表網站能任意讀取 Google 資料；
+            網站只能取得流程授權的資訊。OIDC 的 <code>sub</code> 是識別使用者的欄位，
+            但不同用戶端可能使用不同的成對識別碼，不應假設它能跨所有網站用來追蹤同一個人。
+          </p>
+          <div class="note-panel">
+            <strong>真實 OAuth 不等於畫一個 Google 按鈕</strong>
+            <p>實際串接需要正確設定用戶端、回呼網址、必要的 scope（允許取得的資料或操作範圍）和後端驗證流程，也要妥善保護相關憑證。本頁的 Google 按鈕只是教材示範，不會跳轉、登入或取得任何 Google 資料。</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="token" aria-labelledby="tokenTitle">
+          <p class="eyebrow">04 · TOKEN &amp; JWT</p>
+          <h2 id="tokenTitle">Token 像通行憑證，但不能當成萬能許可</h2>
+          <p>如果每點一次頁面都要重新輸入密碼，使用起來會很不方便。登入成功後，網站通常會用 Session 或 Token 記住這個登入狀態。之後你向伺服器要求資料時，瀏覽器會帶上相應的憑證；伺服器檢查憑證後，還要再檢查你是否有權限取得那份資料。</p>
+          <pre><code>Browser ── request + credential ──→ Server
+Browser ←─ response / 401 / 403 ── Server</code></pre>
+          <p>JWT（JSON Web Token）是一種常見的 Token 格式。它通常由三段文字組成，中間用句點分開：Header（說明格式和簽章方式）、Payload（放一些宣告，例如使用者識別和到期時間）、Signature（簽章）。伺服器可以用簽章檢查內容是否被改過，但這不代表內容被藏起來。</p>
+          <pre><code>Header . Payload . Signature
+格式說明 . 可讀取的宣告 . 用來驗證內容的簽章</code></pre>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>簽章不是加密</h3>
+              <p>簽章可協助伺服器確認內容未被竄改；JWT 的 Payload 通常可被解碼閱讀，就像信封沒有上鎖、但封口有防拆標記。不要放密碼或不必要的個資。</p>
+            </article>
+            <article class="role-card">
+              <h3>驗證不等於授權</h3>
+              <p>伺服器還要檢查簽章、有效期限、發行者與接收對象等資訊，並依伺服器端規則判斷操作權限。</p>
+            </article>
+            <article class="role-card">
+              <h3>被偷走仍有風險</h3>
+              <p>持有有效 Token 的人可能被當成使用者本人。應縮短有效時間、限制暴露機會，並規劃登出與撤銷方式。</p>
+            </article>
+          </div>
+          <p>
+            Token 就像一張臨時通行證：如果別人拿到還有效的通行證，可能會冒充持有人使用服務。
+            因此程式要避免把 Token 放在容易被其他程式讀到的地方，也不能把它貼到公開程式碼或聊天訊息中。
+            登出時如何讓憑證失效，也要在真正的系統設計中先想好。
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>比較</th><th>Session</th><th>JWT</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>主要狀態</td><td>伺服器通常保存 Session 資料，瀏覽器持有 Session ID。</td><td>Token 可帶有經簽章的宣告，伺服器可驗證其內容。</td></tr>
+                <tr><td>登出與撤銷</td><td>伺服器可刪除或失效化 Session，讓原本的 Session ID 不再有效。</td><td>已發出的 Token 通常不會自動消失，需要到期策略或額外撤銷設計。</td></tr>
+                <tr><td>重要提醒</td><td>Session ID 仍是敏感憑證，必須保護。</td><td>JWT 不代表伺服器完全不保存狀態，也不會自動處理權限。</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Session 和 JWT 都是維持登入狀態的做法，沒有一種在所有網站都一定比較好。實際選擇要看系統需求、伺服器架構、登出方式和安全設計；這堂課先理解差異，不需要自己製作登入加密系統。</p>
+        </section>
+
+        <section class="lesson-section" id="practice" aria-labelledby="practiceTitle">
+          <p class="eyebrow">05 · HANDS-ON DEMO</p>
+          <h2 id="practiceTitle">模擬登入畫面與 Token 狀態</h2>
+          <p>請使用虛構 Email 和密碼。按鈕只切換本頁的示範狀態；密碼不會送出或保存，也不會真的驗證身分。</p>
+          <div class="w09-demo">
+            <form class="w09-form" id="demoLoginForm" novalidate>
+              <div class="w09-field">
+                <label for="demoEmail">Email</label>
+                <input
+                  id="demoEmail"
+                  name="email"
+                  type="email"
+                  autocomplete="off"
+                  required
+                  aria-describedby="demoEmailError"
+                >
+                <small class="w09-field-error" id="demoEmailError"></small>
+              </div>
+              <div class="w09-field">
+                <label for="demoPassword">密碼（只輸入虛構內容）</label>
+                <input
+                  id="demoPassword"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="8"
+                  aria-describedby="demoPasswordError"
+                >
+                <small class="w09-field-error" id="demoPasswordError"></small>
+              </div>
+              <button class="practice-button" type="submit">模擬登入</button>
+              <button class="practice-button w09-google-button" id="googleDemoButton" type="button">
+                示範「使用 Google 登入」
+              </button>
+              <button class="practice-button w09-logout-button" id="demoLogoutButton" type="button" disabled>
+                清除模擬登入狀態
+              </button>
+            </form>
+            <div class="w09-demo-result">
+              <p class="w09-status" id="demoLoginStatus" role="status" aria-live="polite">
+                尚未登入。這是純前端示範。
+              </p>
+              <p class="w09-token-label">示範憑證（不是真正 Token）</p>
+              <code class="w09-token" id="demoToken">目前沒有示範憑證。</code>
+            </div>
+          </div>
+          <div class="note-panel w09-demo-warning">
+            <strong>請勿輸入真實密碼</strong>
+            <p>此頁沒有後端登入、Google OAuth、API 權限檢查，也不會把示範憑證存進 Cookie、Local Storage 或 Session Storage。畫面顯示登入狀態不代表帳號已驗證；這個示範憑證不能用來呼叫任何 API。</p>
+          </div>
+          <ol class="workflow-list">
+            <li>先不輸入資料，按「模擬登入」，觀察欄位錯誤和焦點移到哪裡。</li>
+            <li>再輸入虛構的 Email 和至少 8 個字元的虛構密碼，觀察狀態訊息和示範憑證改變。</li>
+            <li>注意密碼送出後會被清空；這是為了避免它繼續留在欄位中，但不代表本頁有真正驗證密碼。</li>
+            <li>按「示範使用 Google 登入」或「清除模擬登入狀態」，確認訊息會再次提醒這只是畫面示範。</li>
+          </ol>
+          <p>觀察時可以打開瀏覽器開發者工具的 Network 面板：這些按鈕不會發出登入請求。也可以查看瀏覽器儲存空間，確認程式沒有把密碼或示範憑證存起來。</p>
+        </section>
+
+        <section class="lesson-section" id="privacy" aria-labelledby="privacyTitle">
+          <p class="eyebrow">06 · PRIVACY &amp; DATA MINIMIZATION</p>
+          <h2 id="privacyTitle">只收集完成目的所需的資料</h2>
+          <p>登入功能可能會接觸姓名、Email、帳號識別碼或使用紀錄。這些資料可能和特定的人連在一起，所以不能因為「系統收得到」就全部收下來。設計表單前，先逐項問：這個資料要用來完成什麼？少了它，功能真的不能使用嗎？會由誰查看？保存多久？</p>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>先問目的</h3>
+              <p>如果網站只提供課程查詢，住家地址通常不是完成查詢所需要的資料；不需要的欄位就不應隨便要求填寫。</p>
+            </article>
+            <article class="role-card">
+              <h3>清楚告知</h3>
+              <p>在收集資料前，用使用者看得懂的方式說明用途和處理方式，不要把重要說明藏在難懂或找不到的地方。</p>
+            </article>
+            <article class="role-card">
+              <h3>限制存取與保存</h3>
+              <p>只讓工作需要的人或系統查看；也要考慮資料保存多久、何時刪除，以及使用者如何提出查詢或更正要求。</p>
+            </article>
+          </div>
+          <p>
+            本段是課堂概念整理，不是法律意見。實際蒐集、告知與處理個資時，
+            應查閱最新法規及主管機關資料，並向合適的專業人員確認。
+          </p>
+          <p class="lesson-action">
+            <a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=I0050021" target="_blank" rel="noreferrer">
+              參考：全國法規資料庫《個人資料保護法》
+            </a>
+          </p>
+        </section>
+
+        <section class="lesson-section" id="review" aria-labelledby="reviewTitle">
+          <p class="eyebrow">07 · CHECK YOUR UNDERSTANDING</p>
+          <h2 id="reviewTitle">課後思考</h2>
+          <ol class="workflow-list">
+            <li>使用 Google 登入時，網站會知道你的 Google 密碼嗎？</li>
+            <li>JWT 有簽章，是否代表別人看不到 Payload？</li>
+            <li>學生 A 已登入，伺服器為什麼仍要確認他不能讀取學生 B 的成績？</li>
+            <li>如果一個課程查詢網站要求住址和身分證字號，應先問哪些問題？</li>
+            <li>如何確認 AI 產生的登入功能沒有把密碼或 Token 存進前端儲存空間？</li>
+          </ol>
+          <div class="note-panel">
+            <strong>可以用這些方向檢查自己的答案</strong>
+            <p>Google 登入的密碼由 Google 處理；JWT 簽章用來檢查內容，不是把內容藏起來；登入只確認身分，伺服器還要再檢查資料權限；蒐集個資前要問目的和必要性；檢查 AI 程式時，可以查看是否有不必要的網路請求、Cookie 或瀏覽器儲存操作。</p>
+          </div>
+          <div class="note-panel">
+            <strong>本週重點</strong>
+            <p>先確認使用者是誰，再由伺服器確認他可以做什麼；OAuth/OIDC 是第三方授權和身分確認流程的一部分；Token 是登入憑證，JWT 簽章不等於加密；Session 和 JWT 都要妥善保護；個資只收集完成目的所需的範圍。</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

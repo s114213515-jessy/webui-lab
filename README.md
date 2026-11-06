@@ -121,6 +121,16 @@ http://127.0.0.1:7777/w07.html
 http://127.0.0.1:7777/w08.html
 ```
 
+## W9：OAuth、使用者登入與 Token
+
+`public/w09.html` 說明 Authentication / Authorization、OAuth 2.0 / OIDC、Token、JWT 與資料最小化，
+並提供純前端登入狀態示範。示範不連接 Google、不驗證帳號、不傳送或保存密碼，也不會建立可呼叫 API 的 Token；
+不要輸入真實帳密。實際登入與 API 權限檢查必須由後端實作。
+
+```text
+http://127.0.0.1:7777/w09.html
+```
+
 ## 專案結構
 
 ```text
@@ -131,12 +141,14 @@ public/
 │   ├── w05.css
 │   ├── w06.css
 │   ├── w07.css
-│   └── w08.css
+│   ├── w08.css
+│   └── w09.css
 ├── js/
 │   ├── app.js
 │   ├── w05.js
 │   ├── w06.js
-│   └── w08.js
+│   ├── w08.js
+│   └── w09.js
 ├── w01.html
 ├── w02.html
 ├── w03.html
@@ -145,6 +157,7 @@ public/
 ├── w06.html
 ├── w07.html
 ├── w08.html
+├── w09.html
 └── json/
     ├── teacher_ops.json
     └── dashboard_cards.json
